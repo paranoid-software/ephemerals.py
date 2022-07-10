@@ -30,10 +30,19 @@ class EphemeralMsSqlDbContext:
         self.__db_manager.create_database(self.__db_name)
         for script in self.__scripts:
             self.__db_manager.execute_non_query(script, self.__db_name)
-        return self.__db_name
+        return self, self.__db_name
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.__db_manager.drop_database(self.__db_name)
+
+    def get_all_database_names(self):
+        return self.__db_manager.get_all_database_names()
+
+    def get_all_table_names(self):
+        return self.__db_manager.get_all_table_names(self.__db_name)
+
+    def get_row_count(self, table_name):
+        return self.__db_manager.get_row_count(self.__db_name, table_name)
 
     @staticmethod
     def __get_connection_string_params(connection_string) -> dict:

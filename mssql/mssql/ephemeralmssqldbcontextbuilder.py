@@ -1,19 +1,19 @@
 from typing import List
 
-from mssql import EphemeralMsSqlDbContext, DbManagerProtocol
+from mssql import EphemeralMsSqlDbContext, DbManagerProtocol, FilesManagerProtocol, FilesManager
 
 
 class EphemeralMsSqlDbContextBuilder:
 
+    __files_manager: FilesManagerProtocol
     __scripts: List[str]
 
-    def __init__(self):
+    def __init__(self, files_manager: FilesManagerProtocol = None):
+        self.__files_manager = files_manager or FilesManager()
         self.__scripts = []
 
     def add_script_from_file(self, filepath):
-        file = open(filepath)
-        file_content = file.read()
-        self.__scripts.append(file_content)
+        self.__scripts.append(self.__files_manager.read_all_text(filepath))
         return self
 
     def add_script(self, sentence):

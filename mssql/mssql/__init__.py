@@ -1,3 +1,4 @@
+from .filesmanager import FilesManagerProtocol, FilesManager
 from .dbmanager import DbManagerProtocol, DbManager
 from .ephemeralmssqldbcontext import EphemeralMsSqlDbContext
 from .ephemeralmssqldbcontextbuilder import EphemeralMsSqlDbContextBuilder
