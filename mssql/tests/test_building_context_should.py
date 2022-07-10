@@ -49,7 +49,8 @@ class TestBuildingContextShould:
                 .build(connection_string, db_manager):
             files_manager.read_all_text.assert_called_once()
 
-    def test_create_new_database(self, connection_string):
+    def test_create_ephemeral_database(self, connection_string):
         with EphemeralMsSqlDbContextBuilder()\
                 .build(connection_string) as (ctx, db_name):
             assert_that(ctx.get_all_database_names()).contains(db_name)
+        assert_that(ctx.get_all_database_names()).does_not_contain(db_name)
