@@ -1,11 +1,12 @@
 name: MsSql PyPi Package Upload
 
 on:
+  push:
   pull_request:
     branches:
-      - main
+    - main
     paths:
-      - mssql
+    - 'mssql'
 
 jobs:
   deploy:
