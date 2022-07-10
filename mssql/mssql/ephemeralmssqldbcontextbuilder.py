@@ -12,12 +12,12 @@ class EphemeralMsSqlDbContextBuilder:
         self.__files_manager = files_manager or FilesManager()
         self.__scripts = []
 
-    def add_script(self, sentence):
-        self.__scripts.append(sentence)
-        return self
-
     def add_script_from_file(self, filepath):
         self.__scripts.append(self.__files_manager.read_all_text(filepath))
+        return self
+
+    def add_script(self, sentence):
+        self.__scripts.append(sentence)
         return self
 
     def build(self,
