@@ -14,7 +14,7 @@ class DbManagerProtocol(ABC):
         pass
 
     @abc.abstractmethod
-    def execute_query(self, sentence: str, at: str):
+    def execute_query(self, sentence: str, at: str) -> [dict]:
         pass
 
     @abc.abstractmethod
@@ -44,7 +44,7 @@ class DbManager(DbManagerProtocol):
         cursor.close()
         cnn.close()
 
-    def execute_query(self, sentence: str, at: str):
+    def execute_query(self, sentence: str, at: str) -> [dict]:
         cnn = self.__get_connection(at)
         cursor = cnn.cursor()
         cursor.execute(sentence)

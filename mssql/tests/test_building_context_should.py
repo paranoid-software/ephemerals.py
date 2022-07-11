@@ -11,7 +11,7 @@ class TestBuildingContextShould:
     def connection_string(self):
         return 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost,31433;UID=sa;PWD=my-New-pwd;'
 
-    def test_set_edb_as_db_name_prefix(self, connection_string):
+    def test_set_ephemeral_db_name_prefix(self, connection_string):
         with EphemeralMsSqlDbContextBuilder()\
                 .build(connection_string) as (ctx, db_name):
             assert_that(db_name).starts_with('edb')
