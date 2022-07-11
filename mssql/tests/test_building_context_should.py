@@ -1,5 +1,4 @@
 from unittest import mock
-
 import pytest
 from assertpy import assert_that
 
