@@ -40,19 +40,16 @@ class EphemeralMsSqlDbContext:
             'SELECT name FROM sys.databases;',
             'master'
         )
-        db_names = []
-        for row in query_result:
-            db_names.append(row.get('name'))
-        return db_names
+        return [item.get('name') for item in query_result]
 
     def get_all_table_names(self):
         query_result = self.__db_manager.execute_query(
-            f'SELECT name FROM sys.Tables;',
+            f'SELECT name FROM sys.tables;',
             self.__db_name
         )
         return [item.get('name') for item in query_result]
 
-    def get_row_count(self, table_name):
+    def get_row_count(self, table_name) -> int:
         query_result = self.__db_manager.execute_query(
             f'SELECT count(*) as row_count FROM {table_name} WITH(NOLOCK);',
             self.__db_name
