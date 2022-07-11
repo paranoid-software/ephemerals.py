@@ -14,6 +14,10 @@ class DbManagerProtocol(ABC):
         pass
 
     @abc.abstractmethod
+    def execute_query(self, sentence: str, at: str):
+        pass
+
+    @abc.abstractmethod
     def get_all_database_names(self) -> [str]:
         pass
 
@@ -51,6 +55,15 @@ class DbManager(DbManagerProtocol):
         cnn.commit()
         cursor.close()
         cnn.close()
+
+    def execute_query(self, sentence: str, at: str):
+        cnn = self.__get_connection(at)
+        cursor = cnn.cursor()
+        cursor.execute(sentence)
+        result = [dict(zip(zip(*cursor.description)[0], row)) for row in cursor.fetchall()]
+        cursor.close()
+        cnn.close()
+        return result
 
     def get_all_database_names(self) -> [str]:
         cnn = self.__get_connection()
