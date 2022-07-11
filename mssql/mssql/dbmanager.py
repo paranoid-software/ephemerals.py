@@ -18,18 +18,6 @@ class DbManagerProtocol(ABC):
         pass
 
     @abc.abstractmethod
-    def get_all_database_names(self) -> [str]:
-        pass
-
-    @abc.abstractmethod
-    def get_all_table_names(self, at: str) -> [str]:
-        pass
-
-    @abc.abstractmethod
-    def get_row_count(self, at: str, table_name) -> [str]:
-        pass
-
-    @abc.abstractmethod
     def drop_database(self, name: str):
         pass
 
@@ -60,40 +48,13 @@ class DbManager(DbManagerProtocol):
         cnn = self.__get_connection(at)
         cursor = cnn.cursor()
         cursor.execute(sentence)
-        result = [dict(zip(zip(*cursor.description)[0], row)) for row in cursor.fetchall()]
-        cursor.close()
-        cnn.close()
-        return result
-
-    def get_all_database_names(self) -> [str]:
-        cnn = self.__get_connection()
-        cursor = cnn.cursor()
-        cursor.execute('SELECT name FROM master.sys.databases;')
-        db_names = []
+        columns = [column[0] for column in cursor.description]
+        results = []
         for row in cursor.fetchall():
-            db_names.append(row[0])
+            results.append(dict(zip(columns, row)))
         cursor.close()
         cnn.close()
-        return db_names
-
-    def get_all_table_names(self, at: str) -> [str]:
-        cnn = self.__get_connection(at)
-        cursor = cnn.cursor()
-        table_names = []
-        for row in cursor.tables():
-            table_names.append(row.table_name)
-        cursor.close()
-        cnn.close()
-        return table_names
-
-    def get_row_count(self, at: str, table_name) -> [str]:
-        cnn = self.__get_connection(at, True)
-        cursor = cnn.cursor()
-        cursor.execute(f'SELECT count(*) FROM {table_name} with(nolock);')
-        row_count = cursor.fetchone()[0]
-        cursor.close()
-        cnn.close()
-        return row_count
+        return results
 
     def drop_database(self, name: str):
         cnn = self.__get_connection(auto_commit=True)
