@@ -36,13 +36,30 @@ class EphemeralMsSqlDbContext:
         self.__db_manager.drop_database(self.__db_name)
 
     def get_all_database_names(self):
-        return self.__db_manager.get_all_database_names()
+        query_result = self.__db_manager.execute_query(
+            'SELECT name FROM sys.databases;',
+            'master'
+        )
+        db_names = []
+        for row in query_result:
+            db_names.append(row.get('name'))
+        return db_names
 
     def get_all_table_names(self):
-        return self.__db_manager.get_all_table_names(self.__db_name)
+        query_result = self.__db_manager.execute_query(
+            f'SELECT name FROM sys.Tables;',
+            self.__db_name
+        )
+        return [item.get('name') for item in query_result]
 
     def get_row_count(self, table_name):
-        return self.__db_manager.get_row_count(self.__db_name, table_name)
+        query_result = self.__db_manager.execute_query(
+            f'SELECT count(*) as row_count FROM {table_name} WITH(NOLOCK);',
+            self.__db_name
+        )
+        if len(query_result) == 0:
+            return 0
+        return query_result[0].get('row_count')
 
     @staticmethod
     def __get_connection_string_params(connection_string) -> dict:
