@@ -3,7 +3,7 @@ name: MsSql PyPi Package Upload
 on:
   push:
     tags:
-      - mssql.*
+      - mssql*
 
 jobs:
   deploy:
