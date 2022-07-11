@@ -3,9 +3,9 @@ name: MsSql PyPi Package Upload
 on:
   push:
     branches:
-    - main
+      - main
     tags:
-    - "mssql-v*"
+      - mssql.v-*
 
 jobs:
   deploy:
