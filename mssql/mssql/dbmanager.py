@@ -59,7 +59,8 @@ class DbManager(DbManagerProtocol):
     def drop_database(self, name: str):
         cnn = self.__get_connection(auto_commit=True)
         cursor = cnn.cursor()
-        cursor.execute(f'DROP DATABASE {name};')
+        cursor.execute(f'ALTER DATABASE [{name}] SET single_user WITH ROLLBACK IMMEDIATE;')
+        cursor.execute(f'DROP DATABASE [{name}];')
         cursor.close()
         cnn.close()
 

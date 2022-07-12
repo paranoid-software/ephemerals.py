@@ -28,9 +28,13 @@ class EphemeralMsSqlDbContext:
     def __enter__(self):
         self.__db_name = f'edb_{uuid.uuid4().hex}'
         self.__db_manager.create_database(self.__db_name)
+        scripts_errors = []
         for script in self.__scripts:
-            self.__db_manager.execute_non_query(script, self.__db_name)
-        return self, self.__db_name
+            try:
+                self.__db_manager.execute_non_query(script, self.__db_name)
+            except Exception as e:
+                scripts_errors.append(e)
+        return self, self.__db_name, scripts_errors
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.__db_manager.drop_database(self.__db_name)
