@@ -1,9 +1,9 @@
 import uuid
 
-from mssql import DbManagerProtocol, DbManager
+from postgresql import DbManager, DbManagerProtocol
 
 
-class EphemeralMsSqlDbContext:
+class EphemeralPostgreSqlDbContext:
 
     __db_manager: DbManagerProtocol
     __scripts: [str]
@@ -16,13 +16,14 @@ class EphemeralMsSqlDbContext:
 
         supported_data_sources = ['localhost', '127.0.0.1']
 
-        if self.__get_connection_string_params(connection_string).get('SERVER', None) not in supported_data_sources:
+        connection_params = self.__get_connection_string_params(connection_string)
+        if connection_params.get('SERVER', None) not in supported_data_sources:
             raise Exception('Ephemeral database server must be local, use localhost or 127.0.0.1 as server address.')
 
-        if 'DATABASE' in connection_string:
+        if 'DATABASE' in connection_params:
             raise Exception('Ephemeral database name should not be included on the connection string, please remove DATABASE parameter.')
 
-        self.__db_manager = db_manager or DbManager(connection_string)
+        self.__db_manager = db_manager or DbManager(connection_params)
         self.__scripts = scripts
 
     def __enter__(self):
@@ -41,21 +42,21 @@ class EphemeralMsSqlDbContext:
 
     def get_all_database_names(self):
         query_result = self.__db_manager.execute_query(
-            'SELECT name FROM sys.databases;',
-            'master'
+            'SELECT datname as name FROM pg_database;',
+            ''
         )
         return [item.get('name') for item in query_result]
 
     def get_all_table_names(self):
         query_result = self.__db_manager.execute_query(
-            f'SELECT name FROM sys.tables;',
+            f'SELECT tablename as name FROM pg_catalog.pg_tables;',
             self.__db_name
         )
         return [item.get('name') for item in query_result]
 
     def get_row_count(self, table_name) -> int:
         query_result = self.__db_manager.execute_query(
-            f'SELECT count(*) as row_count FROM {table_name} WITH(NOLOCK);',
+            f'SELECT count(*) as row_count FROM {table_name};',
             self.__db_name
         )
         if len(query_result) == 0:
@@ -74,6 +75,8 @@ class EphemeralMsSqlDbContext:
                 connection_string_params['SERVER'] = host_and_port[0]
                 if len(host_and_port) == 2:
                     connection_string_params['PORT'] = int(host_and_port[1])
+            elif key_value_pair_array[0].upper() == 'PORT':
+                connection_string_params[key_value_pair_array[0].upper()] = int(key_value_pair_array[1])
             else:
                 connection_string_params[key_value_pair_array[0].upper()] = key_value_pair_array[1]
         return connection_string_params
