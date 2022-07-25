@@ -5,13 +5,12 @@ of that kind of environments not only to be able to test complex scenarios but a
 with real interaction between systems.
 
 This repo holds a set of libraries written in Python with the purpose of make the testing code writing easy and 
-light 
-for scenarios which requires to interact with artifacts like:
+light for scenarios which requires interact with artifacts like:
 
 Databases
 
 - [Microsoft SQL Server](https://github.com/paranoid-software/ephemerals.py/tree/main/mssql)
-- PostgreSQL
+- [PostgreSQL](https://github.com/paranoid-software/ephemerals.py/tree/main/postgresql)
 - MySQL
 - Redis
 - Elasticsearch
