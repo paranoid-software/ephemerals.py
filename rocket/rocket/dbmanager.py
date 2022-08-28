@@ -27,6 +27,10 @@ class DbManagerProtocol(ABC):
         pass
 
     @abc.abstractmethod
+    def exec_search(self, db_name, object_name, query_payload):
+        pass
+
+    @abc.abstractmethod
     def drop_database(self, name: str):
         pass
 
@@ -50,7 +54,8 @@ class DbManager(DbManagerProtocol):
                 'secret': self.__db_context.get('account').get('secret'),
                 'grantType': self.__db_context.get('account').get('grantType')
             }
-        return json.loads(requests.post(f'{self.__db_context.get("baseEndpoint")}/accounts/token', json=payload).text)['access_token']
+        r = requests.post(f'{self.__db_context.get("baseEndpoint")}/accounts/token', json=payload)
+        return json.loads(r.text)['access_token']
 
     def create_database(self, name: str):
         headers = {'Authorization': f'Bearer {self.get_access_token()}', 'Content-type': 'application/json'}
@@ -80,6 +85,11 @@ class DbManager(DbManagerProtocol):
         headers = {'Authorization': f'Bearer {self.get_access_token()}', 'Content-type': 'application/json'}
         url = f'{self.__db_context.get("baseEndpoint")}/{db_name}/{object_name}'
         return requests.post(url, data=json.dumps(payload), headers=headers)
+
+    def exec_search(self, db_name, object_name, query_payload):
+        headers = {'Authorization': f'Bearer {self.get_access_token()}', 'Content-type': 'application/json'}
+        url = f'{self.__db_context.get("baseEndpoint")}/{db_name}/{object_name}/search'
+        return requests.post(url, data=json.dumps(query_payload), headers=headers)
 
     def drop_database(self, name: str):
         headers = {'Authorization': f'Bearer {self.get_access_token()}', 'Content-type': 'application/json'}
