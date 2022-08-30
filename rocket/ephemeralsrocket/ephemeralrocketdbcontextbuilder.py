@@ -1,6 +1,6 @@
 from typing import List
 
-from rocket import EphemeralRocketDbContext, DbManagerProtocol
+from ephemeralsrocket import EphemeralRocketDbContext, DbManagerProtocol, ConnectionParams
 
 
 class EphemeralRocketDbContextBuilder:
@@ -40,9 +40,12 @@ class EphemeralRocketDbContextBuilder:
         self.__items[object_name].extend(items)
         return self
 
-    def build(self, db_context: dict,
+    def build(self,
+              connection_params: ConnectionParams,
+              db_name: str = None,
               db_manager: DbManagerProtocol = None):
-        return EphemeralRocketDbContext(db_context,
+        return EphemeralRocketDbContext(connection_params,
+                                        db_name,
                                         self.__date_time_properties_definitions,
                                         self.__encrypt_definitions,
                                         self.__search_definitions,

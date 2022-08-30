@@ -1,7 +1,7 @@
 import uuid
 import json
 
-from rocket import DbManagerProtocol, DbManager
+from ephemeralsrocket import DbManagerProtocol, DbManager, ConnectionParams
 
 
 class EphemeralRocketDbContext:
@@ -14,13 +14,15 @@ class EphemeralRocketDbContext:
     __db_name: str = None
 
     def __init__(self,
-                 db_context: dict,
+                 connection_params: ConnectionParams,
+                 db_name,
                  date_properties_definitions: dict,
                  encrypt_definitions: dict,
                  search_definitions: dict,
                  items: dict,
                  db_manager: DbManagerProtocol = None):
-        self.__db_manager = db_manager or DbManager(db_context)
+        self.__db_manager = db_manager or DbManager(connection_params)
+        self.__db_name = db_name
         self.__date_time_properties_definitions = date_properties_definitions
         self.__encrypt_definitions = encrypt_definitions
         self.__search_definitions = search_definitions
@@ -28,8 +30,16 @@ class EphemeralRocketDbContext:
 
     def __enter__(self):
 
-        self.__db_name = f'edb_{uuid.uuid4().hex}'
-        self.__db_manager.create_database(self.__db_name)
+        if self.__db_name is None:
+            self.__db_name = f'edb_{uuid.uuid4().hex}'
+        else:
+            fetch_db_info_result = self.__db_manager.fetch_database_info(self.__db_name)
+            if fetch_db_info_result.status_code != 404:
+                raise Exception(f'Database name {self.__db_name} is already taken !')
+
+        create_db_result = self.__db_manager.create_database(self.__db_name)
+        if create_db_result.status_code == 400:
+            raise Exception(f'Database name {self.__db_name} is not allowed !')
 
         initialization_errors = []
 
@@ -47,7 +57,7 @@ class EphemeralRocketDbContext:
 
         for object_name in self.__search_definitions.keys():
             try:
-                m = self.__db_manager.create_search_definition(self.__db_name, object_name, self.__search_definitions[object_name])
+                self.__db_manager.create_search_definition(self.__db_name, object_name, self.__search_definitions[object_name])
             except Exception as e:
                 initialization_errors.append(e)
 
@@ -78,6 +88,11 @@ class EphemeralRocketDbContext:
                 initialization_errors.append(e)
 
         return self, self.__db_name, initialization_errors
+
+    def count_records(self, object_name):
+        search_result = self.__db_manager.exec_search(self.__db_name, object_name, {
+        })
+        return json.loads(search_result.text)['total']
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.__db_manager.drop_database(self.__db_name)

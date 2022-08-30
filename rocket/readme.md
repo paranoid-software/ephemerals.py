@@ -1,4 +1,4 @@
-# Ephemeral PostgreSql DB Context
+# Ephemeral Rocket DB Context
 
 Python library to allow databases integration tests with little code.
 
@@ -18,17 +18,36 @@ Then we can reference the package on our test classes and start using it.
 
 ```python
 import pytest
+from assertpy import assert_that
 
-
-from rocket import EphemeralRocketDbContextBuilder
+from ephemeralsrocket import Credentials, ConnectionParams, EphemeralRocketDbContextBuilder
 
 
 class TestMyTestClass:
-    pass
+
+    @pytest.fixture
+    def connection_params(self):
+        return ConnectionParams('http',
+                                'localhost',
+                                8000,
+                                Credentials('sa',
+                                            'my-secret',
+                                            'master')
+                                )
+
+    def test_my_test_method(self, connection_params):
+        with EphemeralRocketDbContextBuilder()\
+                .add_items('books', [{'name': 'My first book'}])\
+                .build(connection_params) as (ctx, db_name, init_errors):
+            # Perform our tests and asserts using the provisioned database
+            pass
+    
 ```
 
 In the code shown above:
 
 - EphemeralRocketDbContextBuilder() # Will create a context builder.
+- .add_items('books', [{'name': 'My first book'}]) # Will set a book item creation.
+- .build(connection_params) as (ctx, db_name, init_errors) # Will execute all registered commands using the provided connection_params and will return the context, database name and initilization errors.
 
-When the ephemeral DB context is disposed the created database will be DROPPED.
+Finaly when the ephemeral DB context is disposed the created database will be DROPPED.
