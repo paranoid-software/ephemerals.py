@@ -30,7 +30,7 @@ def get_version(rel_path: str) -> str:
 
 setuptools.setup(
     name="ephemerals-rocket",
-    version=get_version("rocket/__init__.py"),
+    version=get_version("ephemeralsrocket/__init__.py"),
     author="Paranoid Software",
     author_email="info@paranoid.software",
     license="MIT",
