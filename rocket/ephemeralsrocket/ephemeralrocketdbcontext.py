@@ -83,6 +83,8 @@ class EphemeralRocketDbContext:
                             }
                         }
                     })
+                    if search_result.status_code != 200:
+                        continue
                     total_indexed = json.loads(search_result.text)['total']
             except Exception as e:
                 initialization_errors.append(e)
