@@ -11,6 +11,7 @@ Databases
 
 - [Microsoft SQL Server](https://github.com/paranoid-software/ephemerals.py/tree/main/mssql)
 - [PostgreSQL](https://github.com/paranoid-software/ephemerals.py/tree/main/postgresql)
+- [Rocket] (https://github.com/paranoid-software/ephemerals.py/tree/main/rocket)
 - MySQL
 - Redis
 - Elasticsearch
