@@ -8,6 +8,7 @@ LONG_DESCRIPTION = (HERE / "pypi.md").read_text()
 
 
 REQUIREMENTS = [
+    'pymongo>=4.0.1'
 ]
 
 
