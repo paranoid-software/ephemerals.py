@@ -21,13 +21,7 @@ class TestMyTestClass:
 
     @pytest.fixture
     def connection_params(self):
-        return ConnectionParams('http',
-                                'localhost',
-                                8000,
-                                Credentials('sa',
-                                            'my-secret',
-                                            'master')
-                                )
+        return ConnectionParams('localhost', 27017, 'root', 'pwd')
 
     def test_my_test_method(self, connection_params):
         with EphemeralMongoDbContextBuilder()\
