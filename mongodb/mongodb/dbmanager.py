@@ -1,35 +1,10 @@
-import abc
-from abc import ABC
-
 from pymongo import MongoClient
 
-from mongodb import ConnectionParams
-
-
-class DbManagerProtocol(ABC):
-
-    @abc.abstractmethod
-    def database_exists(self, name):
-        pass
-
-    @abc.abstractmethod
-    def create_database(self, name: str):
-        pass
-
-    @abc.abstractmethod
-    def insert_document(self, db_name, coll_name, doc):
-        pass
-
-    @abc.abstractmethod
-    def count_documents(self, db_name, coll_name):
-        pass
-
-    @abc.abstractmethod
-    def drop_database(self, name: str):
-        pass
+from mongodb import ConnectionParams, DbManagerProtocol
 
 
 class DbManager(DbManagerProtocol):
+
     __connection_params: ConnectionParams
 
     def __init__(self, connection_params: ConnectionParams):
