@@ -1,14 +1,31 @@
+import json
 from typing import List
 
-from mongodb import DbManagerProtocol, EphemeralMongoDbContext, ConnectionParams
+from mongodb import DbManagerProtocol, EphemeralMongoDbContext, ConnectionParams, FilesManagerProtocol, FilesManager
 
 
 class EphemeralMongoDbContextBuilder:
 
+    __files_manager: FilesManagerProtocol
     __items: dict
 
-    def __init__(self):
+    def __init__(self, files_manager: FilesManagerProtocol = None):
+        self.__files_manager = files_manager or FilesManager()
         self.__items = {}
+
+    def add_items_from_file(self, filepath):
+        file_content = self.__files_manager.read_all_text(filepath)
+        try:
+            data: dict = json.loads(file_content)
+            for coll_name in data.keys():
+                if not isinstance(data[coll_name], list):
+                    raise Exception(f'{filepath} content is not valid !')
+                if coll_name not in self.__items:
+                    self.__items[coll_name] = []
+                self.__items[coll_name].extend(data[coll_name])
+        except Exception:
+            raise Exception(f'{filepath} content is not valid !')
+        return self
 
     def add_items(self, coll_name, items: List[dict]):
         if coll_name not in self.__items:
